@@ -9,7 +9,15 @@ module.exports = {
 
     // Ignore all files within node_modules
     // babel files can be .js, .es, .jsx or .es6
-    if (filename.indexOf("node_modules") === -1 && babel.canCompile(filename)) {
+
+    var isNotNodeModule = filename.indexOf("node_modules") === -1;
+    var doesNotMatchIgnoreRegex = false;
+
+    if (process.env.BABEL_IGNORE) {
+      doesNotMatchIgnoreRegex = !filename.match(new RegExp(process.env.BABEL_IGNORE));
+    }
+
+    if ((isNotNodeModule && doesNotMatchIgnoreRegex) && babel.canCompile(filename)) {
       return babel.transform(src, { filename: filename, stage: stage, retainLines: true }).code;
     }
 
